@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Project Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    h1, h2, h3 {
+      color: #333;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    .btn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .btn:hover {
+      background-color: #45a049;
+    }
+    .export-btn {
+      background-color: #2196F3;
+    }
+    .export-btn:hover {
+      background-color: #0b7dda;
+    }
+    .section {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 200px;
+      resize: vertical;
+    }
+    .citation-input {
+      display: flex;
+    }
+    .citation-input input {
+      flex: 1;
+      margin-right: 10px;
+      margin-bottom: 0;
+    }
+    .citation-item {
+      margin: 5px 0;
+      padding: 5px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+    .remove-btn {
+      color: red;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    .figure-container {
+      margin: 15px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+    .figure-img {
+      max-width: 100%;
+      max-height: 300px;
+      display: block;
+      margin: 10px auto;
+      border: 1px solid #ddd;
+    }
+    .figure-caption {
+      width: 100%;
+      margin-top: 10px;
+    }
+    .milestone-item {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+    .tab-container {
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+    .tab-buttons {
+      display: flex;
+      overflow-x: auto;
+    }
+    .tab {
+      padding: 10px 15px;
+      cursor: pointer;
+      background: #f5f5f5;
+      margin-right: 5px;
+      border: 1px solid #ddd;
+      border-bottom: none;
+    }
+    .tab.active {
+      background: #fff;
+      border-bottom: 2px solid #4CAF50;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .add-btn {
+      margin-top: 10px;
+      background-color: #607d8b;
+    }
+    .add-btn:hover {
+      background-color: #546e7a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Research Project Tracker</h1>
+      <div>
+        <button class="btn" onclick="saveProject()">Save</button>
+        <button class="btn" onclick="loadProject()">Load</button>
+        <button class="btn export-btn" onclick="exportToPDF()">Export as PDF</button>
+      </div>
+    </div>
+
+    <div class="tab-container">
+      <div class="tab-buttons">
+        <div class="tab active" onclick="openTab(event, 'info')">Project Info</div>
+        <div class="tab" onclick="openTab(event, 'abstract')">Abstract</div>
+        <div class="tab" onclick="openTab(event, 'background')">Background</div>
+        <div class="tab" onclick="openTab(event, 'problem')">Problem Statement</div>
+        <div class="tab" onclick="openTab(event, 'objectives')">Objectives</div>
+        <div class="tab" onclick="openTab(event, 'milestones')">Milestones</div>
+        <div class="tab" onclick="openTab(event, 'literature')">Literature</div>
+        <div class="tab" onclick="openTab(event, 'methodology')">Methodology</div>
+      </div>
+    </div>
+
+    <!-- Project Info Tab -->
+    <div id="info" class="tab-content active">
+      <div class="section">
+        <h2>Project Information</h2>
+        <label for="projectTitle">Project Title:</label>
+        <input type="text" id="projectTitle" placeholder="Enter project title">
+        
+        <label for="studentName">Your Name:</label>
+        <input type="text" id="studentName" placeholder="Enter your name">
+        
+        <label for="teamMembers">Team Members (comma separated):</label>
+        <input type="text" id="teamMembers" placeholder="Enter team members">
+      </div>
+    </div>
+
+    <!-- Abstract Tab -->
+    <div id="abstract" class="tab-content">
+      <div class="section">
+        <h2>Abstract</h2>
+        <p>Guidelines: An abstract is a concise summary of the entire paper (150-250 words).</p>
+        
+        <label for="abstractText">Abstract Text:</label>
+        <textarea id="abstractText" placeholder="Enter abstract text here..."></textarea>
+        
+        <div>
+          <h3>Citations</h3>
+          <div class="citation-input">
+            <input type="text" id="abstractCitation" placeholder="Enter citation">
+            <button class="btn" onclick="addCitation('abstract')">Add</button>
+          </div>
+          <div id="abstractCitations"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Background Tab -->
+    <div id="background" class="tab-content">
+      <div class="section">
+        <h2>Background Study</h2>
+        <p>Guidelines: Add important sentences from literature that provide context for your research.</p>
+        
+        <div id="backgroundItems">
+          <!-- Initial background item -->
+          <div class="background-item">
+            <label>Background Statement 1:</label>
+            <textarea placeholder="Enter important background sentence..."></textarea>
+            
+            <h3>Citation</h3>
+            <div class="citation-input">
+              <input type="text" placeholder="Enter citation">
+              <button class="btn" onclick="addBackgroundCitation(this)">Add</button>
+            </div>
+            <div class="background-citations"></div>
+          </div>
+        </div>
+        
+        <button class="btn add-btn" onclick="addBackgroundItem()">Add Another Statement</button>
+      </div>
+    </div>
+
+    <!-- Problem Statement Tab -->
+    <div id="problem" class="tab-content">
+      <div class="section">
+        <h2>Problem Statement/Research Questions</h2>
+        <p>Guidelines: Formulate a specific research question or problem statement.</p>
+        
+        <textarea id="problemStatement" placeholder="Enter your research question or problem statement..."></textarea>
+      </div>
+    </div>
+
+    <!-- Objectives Tab -->
+    <div id="objectives" class="tab-content">
+      <div class="section">
+        <h2>Objectives and Goals</h2>
+        <p>Guidelines: Write specific, measurable objectives that address your research question.</p>
+        
+        <label for="objectiveText">Objective:</label>
+        <textarea id="objectiveText" placeholder="Enter a specific research objective..."></textarea>
+        
+        <label for="goalText">Goal:</label>
+        <textarea id="goalText" placeholder="Enter your broader research goal..."></textarea>
+      </div>
+    </div>
+
+    <!-- Literature Review Tab -->
+    <div id="literature" class="tab-content">
+      <div class="section">
+        <h2>Literature Review</h2>
+        <p>Guidelines: Summarize key pieces of literature related to your project.</p>
+        
+        <label for="litTitle">Section Title:</label>
+        <input type="text" id="litTitle" placeholder="Enter a descriptive title for this section...">
+        
+        <label for="litContent">Content:</label>
+        <textarea id="litContent" placeholder="Summarize the literature, highlighting main findings..."></textarea>
+        
+        <div>
+          <h3>Citations</h3>
+          <div class="citation-input">
+            <input type="text" id="litCitation" placeholder="Enter citation">
+            <button class="btn" onclick="addCitation('literature')">Add</button>
+          </div>
+          <div id="litCitations"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Milestones Tab -->
+    <div id="milestones" class="tab-content">
+      <div class="section">
+        <h2>Milestones & Project Planning</h2>
+        <p>Guidelines: Define key milestones, timelines, and project management details.</p>
+        
+        <div id="milestoneItems">
+          <!-- Initial milestone item -->
+          <div class="milestone-item">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label>Milestone 1:</label>
+              <button class="btn remove-btn" style="background-color: #f44336; margin: 0 0 10px 0;" onclick="removeMilestone(this)">Remove</button>
+            </div>
+            <input type="text" placeholder="Milestone title...">
+            <div style="display: flex; margin-bottom: 10px;">
+              <div style="flex: 1; margin-right: 10px;">
+                <label>Start Date:</label>
+                <input type="date">
+              </div>
+              <div style="flex: 1;">
+                <label>End Date:</label>
+                <input type="date">
+              </div>
+            </div>
+            <label>Description:</label>
+            <textarea placeholder="Describe this milestone and its deliverables..."></textarea>
+            <label>Status:</label>
+            <select>
+              <option value="not-started">Not Started</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="delayed">Delayed</option>
+            </select>
+          </div>
+        </div>
+        
+        <button class="btn add-btn" onclick="addMilestone()">Add Another Milestone</button>
+      </div>
+    </div>
+
+    <!-- Methodology Tab -->
+    <div id="methodology" class="tab-content">
+      <div class="section">
+        <h2>Methodology</h2>
+        <p>Guidelines: Describe research design, data collection methods, and analysis techniques.</p>
+        
+        <label for="methTitle">Section Title:</label>
+        <input type="text" id="methTitle" placeholder="Enter a title for this section...">
+        
+        <label for="methContent">Content:</label>
+        <textarea id="methContent" placeholder="Describe your methodology approach in detail..."></textarea>
+        
+        <div>
+          <h3>Figures & Diagrams</h3>
+          <p>Upload architecture diagrams, flowcharts, or other visual representations of your methodology.</p>
+          
+          <div id="figuresContainer">
+            <!-- Figures will be added here -->
+          </div>
+          
+          <div style="margin: 15px 0;">
+            <input type="file" id="figureUpload" accept="image/*" style="display: none;" onchange="handleFigureUpload(event)">
+            <button class="btn" onclick="document.getElementById('figureUpload').click()">Upload Figure</button>
+          </div>
+        </div>
+        
+        <div>
+          <h3>Citations</h3>
+          <div class="citation-input">
+            <input type="text" id="methCitation" placeholder="Enter citation">
+            <button class="btn" onclick="addCitation('methodology')">Add</button>
+          </div>
+          <div id="methCitations"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    // Project data structure
+    let project = {
+      title: "",
+      studentName: "",
+      teamMembers: "",
+      abstract: {
+        text: "",
+        citations: []
+      },
+      background: [
+        { text: "", citations: [] }
+      ],
+      problemStatement: "",
+      objective: "",
+      goal: "",
+      milestones: [
+        {
+          title: "",
+          startDate: "",
+          endDate: "",
+          description: "",
+          status: "not-started"
+        }
+      ],
+      literature: {
+        title: "",
+        content: "",
+        citations: []
+      },
+      methodology: {
+        title: "",
+        content: "",
+        citations: [],
+        figures: []
+      }
+    };
+
+    // Tab functionality
+    function openTab(evt, tabName) {
+      const tabContents = document.getElementsByClassName("tab-content");
+      for (let i = 0; i < tabContents.length; i++) {
+        tabContents[i].classList.remove("active");
+      }
+      const tabs = document.getElementsByClassName("tab");
+      for (let i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove("active");
+      }
+      document.getElementById(tabName).classList.add("active");
+      evt.currentTarget.classList.add("active");
+    }
+
+    // Add citation function
+    function addCitation(section) {
+      let inputId, containerTarget;
+      
+      switch(section) {
+        case 'abstract':
+          inputId = 'abstractCitation';
+          containerTarget = 'abstractCitations';
+          break;
+        case 'literature':
+          inputId = 'litCitation';
+          containerTarget = 'litCitations';
+          break;
+        case 'methodology':
+          inputId = 'methCitation';
+          containerTarget = 'methCitations';
+          break;
+        default:
+          return;
+      }
+      
+      const citationInput = document.getElementById(inputId);
+      const citationValue = citationInput.value.trim();
+      
+      if (citationValue) {
+        const citationsContainer = document.getElementById(containerTarget);
+        const citationItem = document.createElement('div');
+        citationItem.className = 'citation-item';
+        citationItem.textContent = citationValue;
+        
+        const removeBtn = document.createElement('span');
+        removeBtn.className = 'remove-btn';
+        removeBtn.textContent = '×';
+        removeBtn.onclick = function() {
+          citationsContainer.removeChild(citationItem);
+          updateProjectData();
+        };
+        
+        citationItem.appendChild(removeBtn);
+        citationsContainer.appendChild(citationItem);
+        
+        citationInput.value = '';
+        updateProjectData();
+      }
+    }
+
+    // Add background citation
+    function addBackgroundCitation(button) {
+      const backgroundItem = button.closest('.background-item');
+      const citationInput = backgroundItem.querySelector('.citation-input input');
+      const citationValue = citationInput.value.trim();
+      
+      if (citationValue) {
+        const citationsContainer = backgroundItem.querySelector('.background-citations');
+        const citationItem = document.createElement('div');
+        citationItem.className = 'citation-item';
+        citationItem.textContent = citationValue;
+        
+        const removeBtn = document.createElement('span');
+        removeBtn.className = 'remove-btn';
+        removeBtn.textContent = '×';
+        removeBtn.onclick = function() {
+          citationsContainer.removeChild(citationItem);
+          updateProjectData();
+        };
+        
+        citationItem.appendChild(removeBtn);
+        citationsContainer.appendChild(citationItem);
+        
+        citationInput.value = '';
+        updateProjectData();
+      }
+    }
+
+    // Add background item
+    function addBackgroundItem() {
+      const backgroundItems = document.getElementById('backgroundItems');
+      const count = backgroundItems.querySelectorAll('.background-item').length + 1;
+      
+      const newItem = document.createElement('div');
+      newItem.className = 'background-item';
+      newItem.innerHTML = `
+        <label>Background Statement ${count}:</label>
+        <textarea placeholder="Enter important background sentence..."></textarea>
+        
+        <h3>Citation</h3>
+        <div class="citation-input">
+          <input type="text" placeholder="Enter citation">
+          <button class="btn" onclick="addBackgroundCitation(this)">Add</button>
+        </div>
+        <div class="background-citations"></div>
+      `;
+      
+      backgroundItems.appendChild(newItem);
+      
+      // Add event listener for the textarea
+      newItem.querySelector('textarea').addEventListener('input', updateProjectData);
+    }
+
+    // Figure Upload Handler
+    function handleFigureUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const figuresContainer = document.getElementById('figuresContainer');
+          const figureIndex = figuresContainer.children.length + 1;
+          
+          const figureContainer = document.createElement('div');
+          figureContainer.className = 'figure-container';
+          figureContainer.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h4>Figure ${figureIndex}</h4>
+              <button class="btn remove-btn" style="background-color: #f44336; margin: 0;" onclick="removeFigure(this)">Remove</button>
+            </div>
+            <img src="${e.target.result}" alt="Figure ${figureIndex}" class="figure-img">
+            <label>Caption:</label>
+            <input type="text" class="figure-caption" placeholder="Enter figure caption...">
+          `;
+          
+          figuresContainer.appendChild(figureContainer);
+          updateProjectData();
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    // Remove Figure
+    function removeFigure(button) {
+      const figureContainer = button.closest('.figure-container');
+      figureContainer.parentNode.removeChild(figureContainer);
+      
+      // Renumber remaining figures
+      const figures = document.querySelectorAll('.figure-container');
+      figures.forEach((figure, index) => {
+        figure.querySelector('h4').textContent = `Figure ${index + 1}`;
+      });
+      
+      updateProjectData();
+    }
+    
+    // Add Milestone
+    function addMilestone() {
+      const milestoneItems = document.getElementById('milestoneItems');
+      const count = milestoneItems.querySelectorAll('.milestone-item').length + 1;
+      
+      const newItem = document.createElement('div');
+      newItem.className = 'milestone-item';
+      newItem.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <label>Milestone ${count}:</label>
+          <button class="btn remove-btn" style="background-color: #f44336; margin: 0 0 10px 0;" onclick="removeMilestone(this)">Remove</button>
+        </div>
+        <input type="text" placeholder="Milestone title...">
+        <div style="display: flex; margin-bottom: 10px;">
+          <div style="flex: 1; margin-right: 10px;">
+            <label>Start Date:</label>
+            <input type="date">
+          </div>
+          <div style="flex: 1;">
+            <label>End Date:</label>
+            <input type="date">
+          </div>
+        </div>
+        <label>Description:</label>
+        <textarea placeholder="Describe this milestone and its deliverables..."></textarea>
+        <label>Status:</label>
+        <select>
+          <option value="not-started">Not Started</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="delayed">Delayed</option>
+        </select>
+      `;
+      
+      milestoneItems.appendChild(newItem);
+      updateProjectData();
+    }
+    
+    // Remove Milestone
+    function removeMilestone(button) {
+      const milestoneItem = button.closest('.milestone-item');
+      milestoneItem.parentNode.removeChild(milestoneItem);
+      
+      // Renumber remaining milestones
+      const milestones = document.querySelectorAll('.milestone-item');
+      milestones.forEach((milestone, index) => {
+        milestone.querySelector('label').textContent = `Milestone ${index + 1}:`;
+      });
+      
+      updateProjectData();
+    }
+    
+    // Update project data from UI
+    function updateProjectData() {
+      project.title = document.getElementById("projectTitle").value;
+      project.studentName = document.getElementById("studentName").value;
+      project.teamMembers = document.getElementById("teamMembers").value;
+      project.abstract.text = document.getElementById("abstractText").value;
+      project.problemStatement = document.getElementById("problemStatement").value;
+      project.objective = document.getElementById("objectiveText").value;
+      project.goal = document.getElementById("goalText").value;
+      project.literature.title = document.getElementById("litTitle").value;
+      project.literature.content = document.getElementById("litContent").value;
+      project.methodology.title = document.getElementById("methTitle").value;
+      project.methodology.content = document.getElementById("methContent").value;
+
+      // Update citations
+      project.abstract.citations = [];
+      const abstractCitationsContainer = document.getElementById("abstractCitations");
+      const abstractCitationNodes = abstractCitationsContainer.querySelectorAll(".citation-item");
+      abstractCitationNodes.forEach(citationItem => {
+        project.abstract.citations.push(citationItem.textContent.replace("×", "").trim());
+      });
+
+      project.literature.citations = [];
+      const litCitationsContainer = document.getElementById("litCitations");
+      const litCitationNodes = litCitationsContainer.querySelectorAll(".citation-item");
+      litCitationNodes.forEach(citationItem => {
+        project.literature.citations.push(citationItem.textContent.replace("×", "").trim());
+      });
+
+      project.methodology.citations = [];
+      const methCitationsContainer = document.getElementById("methCitations");
+      const methCitationNodes = methCitationsContainer.querySelectorAll(".citation-item");
+      methCitationNodes.forEach(citationItem => {
+        project.methodology.citations.push(citationItem.textContent.replace("×", "").trim());
+      });
+
+      // Update background items
+      project.background = [];
+      const backgroundItems = document.querySelectorAll(".background-item");
+      backgroundItems.forEach(item => {
+        const text = item.querySelector("textarea").value;
+        const citationsDiv = item.querySelector(".background-citations");
+        const citations = [];
+        const citationItems = citationsDiv.querySelectorAll(".citation-item");
+        citationItems.forEach(citItem => {
+          citations.push(citItem.textContent.replace("×", "").trim());
+        });
+        project.background.push({ text, citations });
+      });
+      
+      // Update milestones
+      project.milestones = [];
+      const milestoneItems = document.querySelectorAll(".milestone-item");
+      milestoneItems.forEach(item => {
+        const title = item.querySelector("input[type='text']").value;
+        const startDate = item.querySelectorAll("input[type='date']")[0].value;
+        const endDate = item.querySelectorAll("input[type='date']")[1].value;
+        const description = item.querySelector("textarea").value;
+        const status = item.querySelector("select").value;
+        
+        project.milestones.push({
+          title,
+          startDate,
+          endDate,
+          description,
+          status
+        });
+      });
+      
+      // Update figures
+      project.methodology.figures = [];
+      const figureContainers = document.querySelectorAll(".figure-container");
+      figureContainers.forEach(container => {
+        const image = container.querySelector("img").src;
+        const caption = container.querySelector(".figure-caption").value;
+        
+        project.methodology.figures.push({
+          image,
+          caption
+        });
+      });
+    }
+
+    // Save project to local storage
+    function saveProject() {
+      updateProjectData();
+      localStorage.setItem('researchProject', JSON.stringify(project));
+      alert('Project saved successfully!');
+    }
+
+    // Load project from local storage
+    function loadProject() {
+      const savedProject = localStorage.getItem('researchProject');
+      
+      if (savedProject) {
+        project = JSON.parse(savedProject);
+        
+        // Update UI with loaded data
+        document.getElementById("projectTitle").value = project.title || "";
+        document.getElementById("studentName").value = project.studentName || "";
+        document.getElementById("teamMembers").value = project.teamMembers || "";
+        document.getElementById("abstractText").value = project.abstract.text || "";
+        document.getElementById("problemStatement").value = project.problemStatement || "";
+        document.getElementById("objectiveText").value = project.objective || "";
+        document.getElementById("goalText").value = project.goal || "";
+        document.getElementById("litTitle").value = project.literature.title || "";
+        document.getElementById("litContent").value = project.literature.content || "";
+        document.getElementById("methTitle").value = project.methodology.title || "";
+        document.getElementById("methContent").value = project.methodology.content || "";
+        
+        // Clear and rebuild citations
+        document.getElementById("abstractCitations").innerHTML = "";
+        project.abstract.citations.forEach(citation => {
+          const citationItem = document.createElement('div');
+          citationItem.className = 'citation-item';
+          citationItem.textContent = citation;
+          
+          const removeBtn = document.createElement('span');
+          removeBtn.className = 'remove-btn';
+          removeBtn.textContent = '×';
+          removeBtn.onclick = function() {
+            document.getElementById("abstractCitations").removeChild(citationItem);
+            updateProjectData();
+          };
+          
+          citationItem.appendChild(removeBtn);
+          document.getElementById("abstractCitations").appendChild(citationItem);
+        });
+        
+        document.getElementById("litCitations").innerHTML = "";
+        project.literature.citations.forEach(citation => {
+          const citationItem = document.createElement('div');
+          citationItem.className = 'citation-item';
+          citationItem.textContent = citation;
+          
+          const removeBtn = document.createElement('span');
+          removeBtn.className = 'remove-btn';
+          removeBtn.textContent = '×';
+          removeBtn.onclick = function() {
+            document.getElementById("litCitations").removeChild(citationItem);
+            updateProjectData();
+          };
+          
+          citationItem.appendChild(removeBtn);
+          document.getElementById("litCitations").appendChild(citationItem);
+        });
+        
+        document.getElementById("methCitations").innerHTML = "";
+        project.methodology.citations.forEach(citation => {
+          const citationItem = document.createElement('div');
+          citationItem.className = 'citation-item';
+          citationItem.textContent = citation;
+          
+          const removeBtn = document.createElement('span');
+          removeBtn.className = 'remove-btn';
+          removeBtn.textContent = '×';
+          removeBtn.onclick = function() {
+            document.getElementById("methCitations").removeChild(citationItem);
+            updateProjectData();
+          };
+          
+          citationItem.appendChild(removeBtn);
+          document.getElementById("methCitations").appendChild(citationItem);
+        });
+        
+        // Clear and rebuild background items
+        document.getElementById("backgroundItems").innerHTML = "";
+        project.background.forEach((item, index) => {
+          const backgroundItem = document.createElement('div');
+          backgroundItem.className = 'background-item';
+          backgroundItem.innerHTML = `
+            <label>Background Statement ${index + 1}:</label>
+            <textarea placeholder="Enter important background sentence...">${item.text || ""}</textarea>
+            
+            <h3>Citation</h3>
+            <div class="citation-input">
+              <input type="text" placeholder="Enter citation">
+              <button class="btn" onclick="addBackgroundCitation(this)">Add</button>
+            </div>
+            <div class="background-citations"></div>
+          `;
+          
+          document.getElementById("backgroundItems").appendChild(backgroundItem);
+          
+          // Add event listener for the textarea
+          backgroundItem.querySelector('textarea').addEventListener('input', updateProjectData);
+          
+          // Add citations
+          const citationsContainer = backgroundItem.querySelector('.background-citations');
+          item.citations.forEach(citation => {
+            const citationItem = document.createElement('div');
+            citationItem.className = 'citation-item';
+            citationItem.textContent = citation;
+            
+            const removeBtn = document.createElement('span');
+            removeBtn.className = 'remove-btn';
+            removeBtn.textContent = '×';
+            removeBtn.onclick = function() {
+              citationsContainer.removeChild(citationItem);
+              updateProjectData();
+            };
+            
+            citationItem.appendChild(removeBtn);
+            citationsContainer.appendChild(citationItem);
+          });
+        });
+        
+        // Clear and rebuild milestones
+        document.getElementById("milestoneItems").innerHTML = "";
+        if (project.milestones && project.milestones.length > 0) {
+          project.milestones.forEach((item, index) => {
+            const milestoneItem = document.createElement('div');
+            milestoneItem.className = 'milestone-item';
+            milestoneItem.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label>Milestone ${index + 1}:</label>
+                <button class="btn remove-btn" style="background-color: #f44336; margin: 0 0 10px 0;" onclick="removeMilestone(this)">Remove</button>
+              </div>
+              <input type="text" placeholder="Milestone title..." value="${item.title || ""}">
+              <div style="display: flex; margin-bottom: 10px;">
+                <div style="flex: 1; margin-right: 10px;">
+                  <label>Start Date:</label>
+                  <input type="date" value="${item.startDate || ""}">
+                </div>
+                <div style="flex: 1;">
+                  <label>End Date:</label>
+                  <input type="date" value="${item.endDate || ""}">
+                </div>
+              </div>
+              <label>Description:</label>
+              <textarea placeholder="Describe this milestone and its deliverables...">${item.description || ""}</textarea>
+              <label>Status:</label>
+              <select>
+                <option value="not-started" ${item.status === "not-started" ? "selected" : ""}>Not Started</option>
+                <option value="in-progress" ${item.status === "in-progress" ? "selected" : ""}>In Progress</option>
+                <option value="completed" ${item.status === "completed" ? "selected" : ""}>Completed</option>
+                <option value="delayed" ${item.status === "delayed" ? "selected" : ""}>Delayed</option>
+              </select>
+            `;
+            
+            document.getElementById("milestoneItems").appendChild(milestoneItem);
+          });
+        }
+        
+        // Clear and rebuild figures
+        document.getElementById("figuresContainer").innerHTML = "";
+        if (project.methodology.figures && project.methodology.figures.length > 0) {
+          project.methodology.figures.forEach((figure, index) => {
+            const figureContainer = document.createElement('div');
+            figureContainer.className = 'figure-container';
+            figureContainer.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4>Figure ${index + 1}</h4>
+                <button class="btn remove-btn" style="background-color: #f44336; margin: 0;" onclick="removeFigure(this)">Remove</button>
+              </div>
+              <img src="${figure.image}" alt="Figure ${index + 1}" class="figure-img">
+              <label>Caption:</label>
+              <input type="text" class="figure-caption" placeholder="Enter figure caption..." value="${figure.caption || ""}">
+            `;
+            
+            document.getElementById("figuresContainer").appendChild(figureContainer);
+          });
+        }
+        
+        alert('Project loaded successfully!');
+      } else {
+        alert('No saved project found!');
+      }
+    }
+
+    // Export to PDF using jsPDF
+    function exportToPDF() {
+      updateProjectData();
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFont("helvetica");
+
+      // Title
+      doc.setFontSize(18);
+      doc.text(project.title || "Research Project", 20, 20);
+
+      // Student & Team Info
+      doc.setFontSize(12);
+      doc.text(`Student: ${project.studentName || "Not specified"}`, 20, 30);
+      doc.text(`Team Members: ${project.teamMembers || "Not specified"}`, 20, 40);
+
+      // Abstract
+      doc.setFontSize(14);
+      doc.text("Abstract", 20, 50);
+      doc.setFontSize(12);
+      const abstractLines = doc.splitTextToSize(project.abstract.text || "[Abstract not yet written]", 170);
+      doc.text(abstractLines, 20, 60);
+      
+      let yPosition = 60 + (abstractLines.length * 7);
+      
+      if (project.abstract.citations.length > 0) {
+        doc.text("Citations:", 20, yPosition);
+        yPosition += 10;
+        project.abstract.citations.forEach((citation, index) => {
+          const citationLines = doc.splitTextToSize(`${index + 1}. ${citation}`, 170);
+          doc.text(citationLines, 20, yPosition);
+          yPosition += (citationLines.length * 7);
+        });
+      }
+
+      // Add a new page if we're running out of space
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      // Background
+      doc.setFontSize(14);
+      doc.text("Background Study", 20, yPosition);
+      yPosition += 10;
+      
+      project.background.forEach((item, index) => {
+        doc.setFontSize(12);
+        doc.text(`Background Statement ${index + 1}:`, 20, yPosition);
+        yPosition += 10;
+        
+        const backgroundLines = doc.splitTextToSize(item.text || "[Background not yet written]", 170);
+        doc.text(backgroundLines, 20, yPosition);
+        yPosition += (backgroundLines.length * 7);
+        
+        if (item.citations.length > 0) {
+          doc.text("Citations:", 20, yPosition);
+          yPosition += 10;
+          
+          item.citations.forEach((citation, citationIndex) => {
+            const citationLines = doc.splitTextToSize(`${citationIndex + 1}. ${citation}`, 170);
+            doc.text(citationLines, 20, yPosition);
+            yPosition += (citationLines.length * 7);
+          });
+        }
+        
+        // Add some space between background items
+        yPosition += 10;
+        
+        // Add a new page if needed
+        if (yPosition > 270 && index < project.background.length - 1) {
+          doc.addPage();
+          yPosition = 20;
+        }
+      });
+
+      // Add a new page if we're running out of space
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      // Problem Statement
+      doc.setFontSize(14);
+      doc.text("Problem Statement/Research Questions", 20, yPosition);
+      yPosition += 10;
+      
+      doc.setFontSize(12);
+      const problemLines = doc.splitTextToSize(project.problemStatement || "[Problem statement not yet written]", 170);
+      doc.text(problemLines, 20, yPosition);
+      yPosition += (problemLines.length * 7) + 20;
+
+      // Add a new page if we're running out of space
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      // Objective & Goal
+      doc.setFontSize(14);
+      doc.text("Objective & Goal", 20, yPosition);
+      yPosition += 10;
+      
+      doc.setFontSize(12);
+      const objectiveLines = doc.splitTextToSize(`Objective: ${project.objective || "[Objective not yet written]"}`, 170);
+      doc.text(objectiveLines, 20, yPosition);
+      yPosition += (objectiveLines.length * 7) + 10;
+      
+      const goalLines = doc.splitTextToSize(`Goal: ${project.goal || "[Goal not yet written]"}`, 170);
+      doc.text(goalLines, 20, yPosition);
+      yPosition += (goalLines.length * 7) + 20;
+
+      // Add a new page if we're running out of space
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      // Milestones
+      if (project.milestones && project.milestones.length > 0) {
+        doc.setFontSize(14);
+        doc.text("Milestones & Project Planning", 20, yPosition);
+        yPosition += 10;
+        
+        project.milestones.forEach((milestone, index) => {
+          doc.setFontSize(12);
+          const titleText = `Milestone ${index + 1}: ${milestone.title || "[Untitled]"}`;
+          doc.text(titleText, 20, yPosition);
+          yPosition += 10;
+          
+          const dateText = `Timeline: ${milestone.startDate || "Not set"} to ${milestone.endDate || "Not set"}`;
+          doc.text(dateText, 20, yPosition);
+          yPosition += 10;
+          
+          const statusText = `Status: ${milestone.status.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())}`;
+          doc.text(statusText, 20, yPosition);
+          yPosition += 10;
+          
+          doc.text("Description:", 20, yPosition);
+          yPosition += 10;
+          
+          const descriptionLines = doc.splitTextToSize(milestone.description || "[No description]", 170);
+          doc.text(descriptionLines, 20, yPosition);
+          yPosition += (descriptionLines.length * 7) + 15;
+          
+          // Add a new page if needed
+          if (yPosition > 270 && index < project.milestones.length - 1) {
+            doc.addPage();
+            yPosition = 20;
+          }
+        });
+      }
+
+      // Add a new page if we're running out of space
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      // Literature Review
+      doc.setFontSize(14);
+      doc.text("Literature Review", 20, yPosition);
+      yPosition += 10;
+      
+      doc.setFontSize(12);
+      const literatureLines = doc.splitTextToSize(project.literature.content || "[Literature review not yet written]", 170);
+      doc.text(literatureLines, 20, yPosition);
+      yPosition += (literatureLines.length * 7) + 10;
+      
+      if (project.literature.citations.length > 0) {
+        doc.text("Citations:", 20, yPosition);
+        yPosition += 10;
+        
+        project.literature.citations.forEach((citation, index) => {
+          const citationLines = doc.splitTextToSize(`${index + 1}. ${citation}`, 170);
+          doc.text(citationLines, 20, yPosition);
+          yPosition += (citationLines.length * 7);
+        });
+      }
+      
+      yPosition += 20;
+
+      // Add a new page if we're running out of space
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      // Methodology
+      doc.setFontSize(14);
+      doc.text("Methodology", 20, yPosition);
+      yPosition += 10;
+      
+      doc.setFontSize(12);
+      const methodologyLines = doc.splitTextToSize(project.methodology.content || "[Methodology not yet written]", 170);
+      doc.text(methodologyLines, 20, yPosition);
+      yPosition += (methodologyLines.length * 7) + 10;
+      
+      // Figures
+      if (project.methodology.figures && project.methodology.figures.length > 0) {
+        doc.text("Figures & Diagrams:", 20, yPosition);
+        yPosition += 10;
+        
+        project.methodology.figures.forEach((figure, index) => {
+          // Add a new page for each figure
+          doc.addPage();
+          
+          doc.setFontSize(14);
+          doc.text(`Figure ${index + 1}`, 20, 20);
+          
+          try {
+            // Add the image - scale to fit on page while maintaining aspect ratio
+            const imgData = figure.image;
+            
+            // Create a temporary image to get dimensions
+            const img = new Image();
+            img.src = imgData;
+            
+            // Set default dimensions in case image doesn't load
+            let imgWidth = 150;
+            let imgHeight = 100;
+            
+            // Use a reasonable scale that fits on the page
+            const maxWidth = 170;
+            const maxHeight = 220;
+            
+            if (img.width && img.height) {
+              // Calculate scaled dimensions
+              if (img.width > maxWidth || img.height > maxHeight) {
+                const widthRatio = maxWidth / img.width;
+                const heightRatio = maxHeight / img.height;
+                const ratio = Math.min(widthRatio, heightRatio);
+                
+                imgWidth = img.width * ratio;
+                imgHeight = img.height * ratio;
+              } else {
+                imgWidth = img.width;
+                imgHeight = img.height;
+              }
+            }
+            
+            // Place image centered on page
+            const xOffset = (210 - imgWidth) / 2; // A4 width is 210mm
+            doc.addImage(imgData, 'JPEG', xOffset, 30, imgWidth, imgHeight);
+            
+            // Add caption below image
+            doc.setFontSize(12);
+            const captionLines = doc.splitTextToSize(figure.caption || "[No caption]", 170);
+            doc.text(captionLines, 20, 30 + imgHeight + 10);
+          } catch (error) {
+            doc.setFontSize(12);
+            doc.text("[Error displaying figure]", 20, 50);
+          }
+        });
+        
+        // Reset position to first page of methodology
+        yPosition = 20;
+      }
+      
+      // Add a new page for citations
+      doc.addPage();
+      
+      if (project.methodology.citations.length > 0) {
+        doc.setFontSize(14);
+        doc.text("Methodology Citations:", 20, yPosition);
+        yPosition += 10;
+        
+        doc.setFontSize(12);
+        project.methodology.citations.forEach((citation, index) => {
+          const citationLines = doc.splitTextToSize(`${index + 1}. ${citation}`, 170);
+          doc.text(citationLines, 20, yPosition);
+          yPosition += (citationLines.length * 7);
+        });
+      }
+
+      // Save the PDF
+      doc.save(`${project.title || "Research_Project"}.pdf`);
+    }
+
+    // Set up event listeners for input fields
+    document.getElementById("projectTitle").addEventListener("input", updateProjectData);
+    document.getElementById("studentName").addEventListener("input", updateProjectData);
+    document.getElementById("teamMembers").addEventListener("input", updateProjectData);
+    document.getElementById("abstractText").addEventListener("input", updateProjectData);
+    document.getElementById("problemStatement").addEventListener("input", updateProjectData);
+    document.getElementById("objectiveText").addEventListener("input", updateProjectData);
+    document.getElementById("goalText").addEventListener("input", updateProjectData);
+    document.getElementById("litTitle").addEventListener("input", updateProjectData);
+    document.getElementById("litContent").addEventListener("input", updateProjectData);
+    document.getElementById("methTitle").addEventListener("input", updateProjectData);
+    document.getElementById("methContent").addEventListener("input", updateProjectData);
+  </script>
+</body>
+</html>
